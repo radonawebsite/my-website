@@ -3,46 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>غرفة الدردشة الفورية</title>
+    <title>شات مريم - واجهة واتساب</title>
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #1a1a2e; color: #fff; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .chat-container { width: 100%; max-width: 500px; background: #162447; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); overflow: hidden; display: flex; flex-direction: column; height: 600px; }
-        .chat-header { background: #0f3460; padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; border-bottom: 2px solid #1a1a2e; color: #e94560; }
-        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .message { background: #1f4068; padding: 10px 14px; border-radius: 8px; max-width: 80%; align-self: flex-start; word-break: break-word; }
-        .message.my-msg { background: #e94560; align-self: flex-end; }
-        .msg-author { font-size: 0.75rem; color: #cbd5e1; margin-bottom: 4px; font-weight: bold; }
-        .msg-text { font-size: 0.95rem; }
-        .chat-input-area { padding: 15px; background: #0f3460; display: flex; flex-direction: column; gap: 10px; }
-        .input-row { display: flex; gap: 8px; }
-        input { background: #1a1a2e; border: 1px solid #162447; padding: 10px; color: #fff; border-radius: 6px; outline: none; }
-        input#username { width: 100%; }
-        input#messageInput { flex: 1; }
-        button { background: #e94560; border: none; color: white; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        button:hover { background: #ff5773; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #0c1317; color: #e9edef; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        
+        /* شاشة تسجيل الدخول */
+        .auth-container { background: #222e35; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .auth-container h2 { color: #00a884; margin-bottom: 20px; }
+        .auth-container input { width: 100%; padding: 12px; margin: 10px 0; background: #2a3942; border: 1px solid #374248; color: #fff; border-radius: 8px; outline: none; }
+        .auth-container button { width: 100%; padding: 12px; background: #00a884; border: none; color: #fff; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .auth-container p { margin-top: 15px; font-size: 0.9rem; color: #8696a0; cursor: pointer; }
+
+        /* واجهة الشات الرئيسية */
+        .app-container { display: none; width: 100%; max-width: 1200px; height: 95vh; background: #222e35; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+        
+        /* السايدبار (قائمة المستخدمين) */
+        .sidebar { width: 30%; background: #111b21; border-left: 1px solid #222e35; display: flex; flex-direction: column; }
+        .sidebar-header { background: #202c33; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #00a884; }
+        .logout-btn { background: #ea0038; border: none; padding: 5px 10px; color: white; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .user-list { flex: 1; overflow-y: auto; }
+        .user-item { padding: 15px; border-bottom: 1px solid #222e35; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        .user-item:hover, .user-item.active { background: #2a3942; }
+        .user-avatar { width: 40px; height: 40px; background: #4f5d64; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+
+        /* منطقة المحادثة */
+        .chat-area { width: 70%; background: #0b141a; display: flex; flex-direction: column; position: relative; }
+        .chat-header { background: #202c33; padding: 15px; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-opacity: 0.06; }
+        
+        /* فقاعات الرسايل */
+        .msg { padding: 8px 12px; border-radius: 8px; max-width: 60%; word-break: break-word; font-size: 0.95rem; line-height: 1.4; }
+        .msg.incoming { background: #202c33; align-self: flex-start; border-top-right-radius: 0; }
+        .msg.outgoing { background: #005c4b; align-self: flex-end; border-top-left-radius: 0; color: #e9edef; }
+        .msg-time { font-size: 0.7rem; color: #8696a0; text-align: left; margin-top: 4px; }
+
+        /* منطقة الكتابة */
+        .input-area { background: #202c33; padding: 10px 20px; display: flex; align-items: center; gap: 10px; }
+        .input-area input { flex: 1; padding: 12px; background: #2a3942; border: none; color: white; border-radius: 8px; outline: none; }
+        .input-area button { background: #00a884; border: none; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .no-chat-selected { display: flex; justify-content: center; align-items: center; height: 100%; color: #8696a0; font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
-<div class="chat-container">
-    <div class="chat-header">💬 غرفة الدردشة الحية (Real-time)</div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input-area">
-        <input type="text" id="username" placeholder="اكتب سميتك هنا..." value="مجهول">
-        <div class="input-row">
-            <input type="text" id="messageInput" placeholder="اكتب رسالة..." autocomplete="off">
-            <button id="sendBtn">صيفط</button>
+    <!-- واجهة التسجيل / تسجيل الدخول -->
+    <div class="auth-container" id="authSection">
+        <h2 id="authTitle">إنشاء حساب جديد</h2>
+        <input type="text" id="authUsername" placeholder="الاسم الشخصي (Pseudonyme)">
+        <input type="email" id="authEmail" placeholder="البريد الإلكتروني">
+        <input type="password" id="authPassword" placeholder="كلمة المرور (أكثر من 6 أرقام)">
+        <button id="authBtn">التسجيل</button>
+        <p id="toggleAuth">عندك حساب ديجا؟ تسجيل الدخول</p>
+    </div>
+
+    <!-- واجهة التطبيق الرئيسية (بحال واتساب) -->
+    <div class="app-container" id="appSection">
+        <!-- السايدبار على اليمين -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <span id="myProfileName">أنا</span>
+                <button class="logout-btn" id="logoutBtn">خروج</button>
+            </div>
+            <div class="user-list" id="usersListContainer">
+                <!-- غايبانو هنا المستخدمين لايف -->
+            </div>
+        </div>
+
+        <!-- الشات على اليسار -->
+        <div class="chat-area" id="chatAreaContainer">
+            <div class="no-chat-selected" id="noChatPlaceholder">عزل شي حد من اليمين باش تهضر معاه بريفي 🔒</div>
+            
+            <div style="display: none; flex-direction: column; height: 100%;" id="activeChatBox">
+                <div class="chat-header">
+                    <div class="user-avatar" id="activeChatAvatar">?</div>
+                    <div id="activeChatName">المستخدم</div>
+                </div>
+                <div class="messages-container" id="messagesBox"></div>
+                <div class="input-area">
+                    <input type="text" id="msgInput" placeholder="اكتب رسالة بريفي..." autocomplete="off">
+                    <button id="sendMsgBtn">صيفط</button>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
 <script type="module">
-    // استيراد مكتبات Firebase لايف
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, child, push, onChildAdded, off } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // معلومات الـ Firebase الخاصة بـ المشروع ديالك مريم
+    // إعدادات Firebase ديالك
     const firebaseConfig = {
         apiKey: "AIzaSyBDno7fxVLV_GycKE_vbkZTGYHFiwUuqbw",
         authDomain: "meryem-ddd8c.firebaseapp.com",
@@ -54,55 +105,161 @@
         measurementId: "G-7WFB8DRDMK"
     };
 
-    // تشغيل الـ Firebase وسط الموقع
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
-    const messagesRef = ref(db, 'messages');
 
-    const chatMessages = document.getElementById('chatMessages');
-    const usernameInput = document.getElementById('username');
-    const messageInput = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendBtn');
+    let currentUser = null;
+    let activeChatUserId = null;
+    let isSignUpMode = true;
+    let currentChatRef = null;
 
-    // دالة إرسال الرسالة
-    function sendMessage() {
-        const name = usernameInput.value.trim() || "مجهول";
-        const text = messageInput.value.trim();
+    // عناصر الواجهة
+    const authSection = document.getElementById('authSection');
+    const appSection = document.getElementById('appSection');
+    const authTitle = document.getElementById('authTitle');
+    const authUsername = document.getElementById('authUsername');
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const authBtn = document.getElementById('authBtn');
+    const toggleAuth = document.getElementById('toggleAuth');
+    const myProfileName = document.getElementById('myProfileName');
+    const usersListContainer = document.getElementById('usersListContainer');
+    const noChatPlaceholder = document.getElementById('noChatPlaceholder');
+    const activeChatBox = document.getElementById('activeChatBox');
+    const activeChatName = document.getElementById('activeChatName');
+    const activeChatAvatar = document.getElementById('activeChatAvatar');
+    const messagesBox = document.getElementById('messagesBox');
+    const msgInput = document.getElementById('msgInput');
+    const sendMsgBtn = document.getElementById('sendMsgBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-        if (text !== "") {
-            push(messagesRef, {
-                username: name,
-                message: text,
-                timestamp: Date.now()
-            });
-            messageInput.value = ""; // خوي خانة الكتابة
+    // تبديل واجهة التسجيل / الدخول
+    toggleAuth.addEventListener('click', () => {
+        isSignUpMode = !isSignUpMode;
+        if (isSignUpMode) {
+            authTitle.innerText = "إنشاء حساب جديد";
+            authUsername.style.display = "block";
+            authBtn.innerText = "التسجيل";
+            toggleAuth.innerText = "عندك حساب ديجا؟ تسجيل الدخول";
+        } else {
+            authTitle.innerText = "تسجيل الدخول";
+            authUsername.style.display = "none";
+            authBtn.innerText = "دخول";
+            toggleAuth.innerText = "ما عندكش حساب؟ صايب واحد جديد";
         }
+    });
+
+    // تسجيل أو دخول المستخدم
+    authBtn.addEventListener('click', () => {
+        const email = authEmail.value.trim();
+        const password = authPassword.value.trim();
+        const username = authUsername.value.trim();
+
+        if (!email || !password) return alert("عمر كاع الخانات عافاك!");
+
+        if (isSignUpMode) {
+            if (!username) return alert("اكتب سميتك لي غاتبان للناس!");
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const uid = userCredential.user.uid;
+                    set(ref(db, 'users/' + uid), { username: username, email: email });
+                }).catch(err => alert(err.message));
+        } else {
+            signInWithEmailAndPassword(auth, email, password).catch(err => alert(err.message));
+        }
+    });
+
+    // مراقبة حالة المستخدم (واش داخل ولا خارج)
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            get(child(ref(db), `users/${user.uid}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    myProfileName.innerText = snapshot.val().username + " (أنا) 🟢";
+                    loadUsersList();
+                    authSection.style.display = "none";
+                    appSection.style.display = "flex";
+                }
+            });
+        } else {
+            authSection.style.display = "block";
+            appSection.style.display = "none";
+        }
+    });
+
+    // الخروج
+    logoutBtn.addEventListener('click', () => signOut(auth));
+
+    // جلب قائمة المستخدمين الآخرين
+    function loadUsersList() {
+        usersListContainer.innerHTML = "";
+        const usersRef = ref(db, 'users');
+        onChildAdded(usersRef, (snapshot) => {
+            const userId = snapshot.key;
+            const userData = snapshot.val();
+            if (userId !== currentUser.uid) {
+                const item = document.createElement('div');
+                item.classList.add('user-item');
+                item.innerHTML = `
+                    <div class="user-avatar">${userData.username[0].toUpperCase()}</div>
+                    <div><strong>${userData.username}</strong></div>
+                `;
+                item.addEventListener('click', () => startPrivateChat(userId, userData.username));
+                usersListContainer.appendChild(item);
+            }
+        });
     }
 
-    sendBtn.addEventListener('click', sendMessage);
-    messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
-    });
+    // فتح شات بريفي مع مستخدم معين
+    function startPrivateChat(targetUid, targetName) {
+        activeChatUserId = targetUid;
+        noChatPlaceholder.style.display = "none";
+        activeChatBox.style.display = "flex";
+        activeChatName.innerText = targetName;
+        activeChatAvatar.innerText = targetName[0].toUpperCase();
+        messagesBox.innerHTML = "";
 
-    // استقبال وقراءة الرسايل لايف فالبلاصة بدون ريفريش
-    onChildAdded(messagesRef, (snapshot) => {
-        const data = snapshot.val();
-        const msgDiv = document.createElement('div');
-        msgDiv.classList.add('message');
+        // دمج الـ UIDs باش نصايبو ID فريد وخاص بهاد الجوج دالناس فقط
+        const chatId = currentUser.uid < targetUid ? `${currentUser.uid}_${targetUid}` : `${targetUid}_${currentUser.uid}`;
         
-        // إلا كنتي نتا لي صيفطتيها غاتبان بستايل ولون مختلف
-        if (data.username === usernameInput.value.trim()) {
-            msgDiv.classList.add('my-msg');
-        }
+        if (currentChatRef) off(currentChatRef); // حبس الاستماع للشات القديم
 
-        msgDiv.innerHTML = `
-            <div class="msg-author">${data.username}</div>
-            <div class="msg-text">${data.message}</div>
-        `;
-        
-        chatMessages.appendChild(msgDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight; // هبط الشات ديما لتحت
-    });
+        currentChatRef = ref(db, 'private_chats/' + chatId);
+        onChildAdded(currentChatRef, (snapshot) => {
+            const data = snapshot.val();
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('msg');
+            msgDiv.classList.add(data.senderId === currentUser.uid ? 'outgoing' : 'incoming');
+            
+            const timeStr = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            msgDiv.innerHTML = `
+                <div>${data.text}</div>
+                <div class="msg-time">${timeStr}</div>
+            `;
+            messagesBox.appendChild(msgDiv);
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        });
+    }
+
+    // صيفط رسالة بريفي
+    function sendPrivateMessage() {
+        const text = msgInput.value.trim();
+        if (text === "" || !activeChatUserId) return;
+
+        const chatId = currentUser.uid < activeChatUserId ? `${currentUser.uid}_${activeChatUserId}` : `${activeChatUserId}_${currentUser.uid}`;
+        const chatRef = ref(db, 'private_chats/' + chatId);
+
+        push(chatRef, {
+            senderId: currentUser.uid,
+            text: text,
+            timestamp: Date.now()
+        });
+        msgInput.value = "";
+    }
+
+    sendMsgBtn.addEventListener('click', sendPrivateMessage);
+    msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendPrivateMessage(); });
 </script>
 
 </body>
