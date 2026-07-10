@@ -3,76 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مجتمع الدردشة الفورية</title>
+    <title>المجتمع السري للدردشة</title>
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
-        body { background-color: #0c1317; color: #e9edef; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        /* إعدادات عامة ومستقبلية */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
         
-        /* شاشة اختيار الاسم */
-        .auth-container { background: #222e35; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .auth-container h2 { color: #00a884; margin-bottom: 20px; }
-        .auth-container input { width: 100%; padding: 12px; margin: 10px 0; background: #2a3942; border: 1px solid #374248; color: #fff; border-radius: 8px; outline: none; text-align: center; font-size: 1.1rem; }
-        .auth-container button { width: 100%; padding: 12px; background: #00a884; border: none; color: #fff; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 1.1rem; }
-        .auth-container button:hover { background: #018568; }
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Cairo', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            transition: all 0.25s ease;
+        }
 
-        /* واجهة الشات الرئيسية (واتساب ديسك توب) */
-        .app-container { display: none; width: 100%; max-width: 1200px; height: 95vh; background: #222e35; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+        /* خلفية متحركة خفيفة وعميقة */
+        body { 
+            background: radial-gradient(circle at center, #1a1c29 0%, #0a0b10 100%);
+            color: #f1f5f9; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden;
+        }
+
+        /* تخصيص السكرول بار (Scrollbar) بشكل نيون */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(#7c3aed, #06b6d4); border-radius: 10px; }
+
+        /* ==================== شاشة الدخول (الاسم فقط) ==================== */
+        .auth-container { 
+            background: rgba(18, 20, 32, 0.65); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 40px; 
+            border-radius: 24px; 
+            width: 90%; 
+            max-width: 420px; 
+            text-align: center; 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 2px rgba(124, 58, 237, 0.5) inset;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeIn 0.5s ease-out;
+        }
+        .auth-container h2 { 
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a78bfa 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px; 
+        }
+        .auth-container p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 25px; }
+        .auth-container input { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 20px; 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: #fff; 
+            border-radius: 14px; 
+            outline: none; 
+            text-align: center; 
+            font-size: 1.1rem;
+        }
+        .auth-container input:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .auth-container button { 
+            width: 100%; 
+            padding: 14px; 
+            background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%); 
+            border: none; 
+            color: #fff; 
+            font-weight: bold; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+        }
+        .auth-container button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
+        }
+
+        /* ==================== الواجهة الرئيسية (التطبيق) ==================== */
+        .app-container { 
+            display: none; 
+            width: 95%; 
+            max-width: 1300px; 
+            height: 90vh; 
+            background: rgba(10, 11, 16, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px; 
+            overflow: hidden; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
         
         /* السايدبار (قائمة المستخدمين) */
-        .sidebar { width: 30%; background: #111b21; border-left: 1px solid #222e35; display: flex; flex-direction: column; }
-        .sidebar-header { background: #202c33; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #00a884; border-bottom: 1px solid #2a3942; }
-        .change-name-btn { background: #374248; border: none; padding: 6px 12px; color: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
-        .change-name-btn:hover { background: #4f5d64; }
-        .user-list { flex: 1; overflow-y: auto; }
-        .user-item { padding: 15px; border-bottom: 1px solid #222e35; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
-        .user-item:hover, .user-item.active { background: #2a3942; }
-        .user-avatar { width: 40px; height: 40px; background: #00a884; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; }
+        .sidebar { 
+            width: 32%; 
+            background: rgba(15, 17, 26, 0.7); 
+            border-left: 1px solid rgba(255, 255, 255, 0.05); 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .sidebar-header { 
+            background: rgba(20, 23, 36, 0.5); 
+            padding: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+        .sidebar-header span { font-weight: 700; font-size: 1.1rem; color: #a78bfa; }
+        .change-name-btn { 
+            background: rgba(239, 68, 68, 0.1); 
+            border: 1px solid rgba(239, 68, 68, 0.2); 
+            padding: 8px 14px; 
+            color: #ef4444; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 0.85rem; 
+            font-weight: 600;
+        }
+        .change-name-btn:hover { background: #ef4444; color: #fff; }
+        
+        .user-list { flex: 1; overflow-y: auto; padding: 10px; }
+        .user-item { 
+            padding: 14px; 
+            border-radius: 14px;
+            margin-bottom: 8px;
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid transparent;
+        }
+        .user-item:hover { 
+            background: rgba(124, 58, 237, 0.08); 
+            border-color: rgba(124, 58, 237, 0.2);
+            transform: translateX(-5px);
+        }
+        .user-item.active { 
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%);
+            border-color: rgba(124, 58, 237, 0.4);
+        }
+        .user-avatar { 
+            width: 44px; 
+            height: 44px; 
+            background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%); 
+            border-radius: 12px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: bold; 
+            color: white; 
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+        }
 
         /* منطقة المحادثة */
-        .chat-area { width: 70%; background: #0b141a; display: flex; flex-direction: column; position: relative; }
-        .chat-header { background: #202c33; padding: 15px; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #2a3942; }
-        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-color: #0b141a; }
+        .chat-area { width: 68%; background: rgba(8, 9, 13, 0.4); display: flex; flex-direction: column; position: relative; }
+        .chat-header { 
+            background: rgba(20, 23, 36, 0.5); 
+            padding: 20px; 
+            font-weight: 600; 
+            font-size: 1.2rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+        .messages-container { 
+            flex: 1; 
+            padding: 25px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+        }
         
-        /* فقاعات الرسايل */
-        .msg { padding: 8px 12px; border-radius: 8px; max-width: 60%; word-break: break-word; font-size: 0.95rem; line-height: 1.4; position: relative; }
-        .msg.incoming { background: #202c33; align-self: flex-start; border-top-right-radius: 0; }
-        .msg.outgoing { background: #005c4b; align-self: flex-end; border-top-left-radius: 0; color: #e9edef; }
-        .msg-time { font-size: 0.7rem; color: #8696a0; text-align: left; margin-top: 4px; }
+        /* فقاعات الرسايل المستقبلية */
+        .msg { 
+            padding: 12px 18px; 
+            border-radius: 16px; 
+            max-width: 55%; 
+            word-break: break-word; 
+            font-size: 1rem; 
+            line-height: 1.5; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            animation: msgSlide 0.3s ease-out;
+        }
+        .msg.incoming { 
+            background: rgba(255, 255, 255, 0.04); 
+            align-self: flex-start; 
+            border-bottom-right-radius: 4px; 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+        }
+        .msg.outgoing { 
+            background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%); 
+            align-self: flex-end; 
+            border-bottom-left-radius: 4px; 
+            color: #ffffff; 
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        .msg-time { font-size: 0.7rem; opacity: 0.6; text-align: left; margin-top: 6px; }
 
-        /* منطقة الكتابة */
-        .input-area { background: #202c33; padding: 12px 20px; display: flex; align-items: center; gap: 10px; }
-        .input-area input { flex: 1; padding: 12px; background: #2a3942; border: none; color: white; border-radius: 8px; outline: none; font-size: 1rem; }
-        .input-area button { background: #00a884; border: none; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .input-area button:hover { background: #018568; }
-        .no-chat-selected { display: flex; justify-content: center; align-items: center; height: 100%; color: #8696a0; font-size: 1.2rem; text-align: center; padding: 20px; }
+        /* منطقة الكتابة التحتانية */
+        .input-area { 
+            background: rgba(15, 17, 26, 0.8); 
+            padding: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .input-area input { 
+            flex: 1; 
+            padding: 14px 20px; 
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            color: white; 
+            border-radius: 14px; 
+            outline: none; 
+            font-size: 1rem; 
+        }
+        .input-area input:focus {
+            border-color: #06b6d4;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+        }
+        .input-area button { 
+            background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%); 
+            border: none; 
+            color: white; 
+            padding: 14px 28px; 
+            border-radius: 14px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+        .input-area button:hover { 
+            transform: scale(1.03); 
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+        }
+
+        .no-chat-selected { 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            height: 100%; 
+            color: #64748b; 
+            font-size: 1.2rem; 
+            text-align: center; 
+            padding: 20px; 
+        }
+
+        /* تأثيرات الأنميشن */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes msgSlide { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- شاشة الدخول بالاسم فقط -->
+    <!-- شاشة اختيار الاسم المستقبلي -->
     <div class="auth-container" id="loginSection">
-        <h2>مرحبا بك في المجتمع 👋</h2>
-        <p style="color: #8696a0; margin-bottom: 15px; font-size: 0.9rem;">اختار سّمية باش تدخل تشاتي مع الناس بريفي</p>
-        <input type="text" id="usernameInput" placeholder="اكتب سميتك هنا..." max="15">
-        <button id="enterChatBtn">دخول للدردشة</button>
+        <h2>المجتمع المشفر ⚡</h2>
+        <p>اختار سّمية مستعارة باش تدخل للدردشة الفورية</p>
+        <input type="text" id="usernameInput" placeholder="اكتب اسمك المستعار هنا..." max="15">
+        <button id="enterChatBtn">اتصال بالخادم</button>
     </div>
 
-    <!-- واجهة التطبيق الرئيسية (بحال واتساب) -->
+    <!-- الواجهة الرئيسية الهاربة -->
     <div class="app-container" id="appSection">
-        <!-- السايدبار (قائمة الناس المتواجدين) -->
+        <!-- السايدبار (قائمة المتواجدين) -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <span id="myProfileName">أنا: ...</span>
-                <button class="change-name-btn" id="changeNameBtn">تبديل الاسم</button>
+                <span id="myProfileName">المستخدم: ...</span>
+                <button class="change-name-btn" id="changeNameBtn">مغادرة</button>
             </div>
             <div class="user-list" id="usersListContainer">
-                <!-- غايبانو هنا المستخدمين لايف -->
+                <!-- الناس لايف -->
             </div>
         </div>
 
-        <!-- الشات على اليسار -->
+        <!-- منطقة الشات والرسائل -->
         <div class="chat-area" id="chatAreaContainer">
-            <div class="no-chat-selected" id="noChatPlaceholder">🔒 عزل شي حد من القائمة على اليمين باش تبدا معاه محادثة سرية (بريفي)</div>
+            <div class="no-chat-selected" id="noChatPlaceholder">
+                <div style="font-size: 3rem; margin-bottom: 10px;">💬</div>
+                <div>عزل شي حد من القائمة باش تبدا معاه محادثة مشفرة وآمنة بالكامل</div>
+            </div>
             
             <div style="display: none; flex-direction: column; height: 100%;" id="activeChatBox">
                 <div class="chat-header">
@@ -81,8 +310,8 @@
                 </div>
                 <div class="messages-container" id="messagesBox"></div>
                 <div class="input-area">
-                    <input type="text" id="msgInput" placeholder="اكتب رسالة بريفي..." autocomplete="off">
-                    <button id="sendMsgBtn">صيفط</button>
+                    <input type="text" id="msgInput" placeholder="اكتب رسالتك السرية هنا..." autocomplete="off">
+                    <button id="sendMsgBtn">إرسال</button>
                 </div>
             </div>
         </div>
@@ -92,7 +321,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onChildAdded, off, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // إعدادات الـ Realtime Database ديالك
+    // إعدادات الداتابيز
     const firebaseConfig = {
         apiKey: "AIzaSyBDno7fxVLV_GycKE_vbkZTGYHFivUuqbw",
         authDomain: "meryem-ddd8c.firebaseapp.com",
@@ -127,7 +356,6 @@
     const sendMsgBtn = document.getElementById('sendMsgBtn');
     const changeNameBtn = document.getElementById('changeNameBtn');
 
-    // التحقق واش ديجا مسجل الاسم فالمتصفح
     if (myUid && myUsername) {
         startApp();
     } else {
@@ -135,12 +363,10 @@
         appSection.style.display = "none";
     }
 
-    // زر الدخول بالاسم
     enterChatBtn.addEventListener('click', () => {
         const name = usernameInput.value.trim();
-        if (!name) return alert("عافاك اكتب سميتك أولاً!");
+        if (!name) return alert("عافاك اكتب سّميتك أولاً!");
         
-        // صايب معرف عشوائي فريد للزائر وحفظو فالمتصفح
         myUid = 'user_' + Math.random().toString(36).substring(2, 11);
         myUsername = name;
         
@@ -153,15 +379,11 @@
     function startApp() {
         loginSection.style.display = "none";
         appSection.style.display = "flex";
-        myProfileName.innerText = myUsername + " (أنا) 🟢";
-        
-        // سجل الحساب فـ داتابيز باش يبان للناس الآخرين
+        myProfileName.innerText = myUsername + " (أنا) 🌐";
         set(ref(db, 'users/' + myUid), { username: myUsername });
-        
         loadUsersList();
     }
 
-    // جلب كاع الناس المتواجدين ف داتابيز لايف
     function loadUsersList() {
         usersListContainer.innerHTML = "";
         const usersRef = ref(db, 'users');
@@ -169,17 +391,15 @@
             const userId = snapshot.key;
             const userData = snapshot.val();
             
-            // ما تبينش راسك ف القائمة
             if (userId !== myUid) {
                 const item = document.createElement('div');
                 item.classList.add('user-item');
                 item.setAttribute('id', 'item_' + userId);
                 item.innerHTML = `
                     <div class="user-avatar">${userData.username[0].toUpperCase()}</div>
-                    <div><strong>${userData.username}</strong></div>
+                    <div><strong style="color: #f1f5f9;">${userData.username}</strong></div>
                 `;
                 item.addEventListener('click', () => {
-                    // حيد اللون النشط من الجميع وديرو لهاد المستخدم
                     document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active'));
                     item.classList.add('active');
                     startPrivateChat(userId, userData.username);
@@ -189,7 +409,6 @@
         });
     }
 
-    // فتح شات بريفي (1-on-1) سري
     function startPrivateChat(targetUid, targetName) {
         activeChatUserId = targetUid;
         noChatPlaceholder.style.display = "none";
@@ -198,10 +417,8 @@
         activeChatAvatar.innerText = targetName[0].toUpperCase();
         messagesBox.innerHTML = "";
 
-        // دمج الـ IDs بالترتيب الأبجدي باش نصايبو ID فريد وخاص بهاد الجوج دالناس فقط
         const chatId = myUid < targetUid ? `${myUid}_${targetUid}` : `${targetUid}_${myUid}`;
-        
-        if (currentChatRef) off(currentChatRef); // حبس الشات القديم
+        if (currentChatRef) off(currentChatRef);
 
         currentChatRef = ref(db, 'private_chats/' + chatId);
         onChildAdded(currentChatRef, (snapshot) => {
@@ -216,11 +433,10 @@
                 <div class="msg-time">${timeStr}</div>
             `;
             messagesBox.appendChild(msgDiv);
-            messagesBox.scrollTop = messagesBox.scrollHeight; // هبط ديما لتحت
+            messagesBox.scrollTop = messagesBox.scrollHeight;
         });
     }
 
-    // إرسال الرسالة البريفي
     function sendPrivateMessage() {
         const text = msgInput.value.trim();
         if (text === "" || !activeChatUserId) return;
@@ -239,7 +455,6 @@
     sendMsgBtn.addEventListener('click', sendPrivateMessage);
     msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendPrivateMessage(); });
 
-    // زر تبديل الاسم (الخروج)
     changeNameBtn.addEventListener('click', () => {
         localStorage.clear();
         location.reload();
