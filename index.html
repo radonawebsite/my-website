@@ -2,10 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>المجتمع السري للدردشة</title>
     <style>
-        /* إعدادات عامة ومستقبلية */
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
         
         * { 
@@ -16,7 +15,6 @@
             transition: all 0.25s ease;
         }
 
-        /* خلفية متحركة خفيفة وعميقة */
         body { 
             background: radial-gradient(circle at center, #1a1c29 0%, #0a0b10 100%);
             color: #f1f5f9; 
@@ -27,12 +25,11 @@
             overflow: hidden;
         }
 
-        /* تخصيص السكرول بار (Scrollbar) بشكل نيون */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
         ::-webkit-scrollbar-thumb { background: linear-gradient(#7c3aed, #06b6d4); border-radius: 10px; }
 
-        /* ==================== شاشة الدخول (الاسم فقط) ==================== */
+        /* ==================== شاشة الدخول ==================== */
         .auth-container { 
             background: rgba(18, 20, 32, 0.65); 
             backdrop-filter: blur(16px);
@@ -84,12 +81,8 @@
             font-size: 1.1rem;
             box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
         }
-        .auth-container button:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
-        }
 
-        /* ==================== الواجهة الرئيسية (التطبيق) ==================== */
+        /* ==================== الواجهة الرئيسية ==================== */
         .app-container { 
             display: none; 
             width: 95%; 
@@ -104,7 +97,7 @@
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
         
-        /* السايدبار (قائمة المستخدمين) */
+        /* السايدبار */
         .sidebar { 
             width: 32%; 
             background: rgba(15, 17, 26, 0.7); 
@@ -165,7 +158,6 @@
             font-weight: bold; 
             color: white; 
             font-size: 1.2rem;
-            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
         }
 
         /* منطقة المحادثة */
@@ -180,124 +172,60 @@
             gap: 15px; 
             border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
         }
-        .messages-container { 
-            flex: 1; 
-            padding: 25px; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 14px; 
+
+        /* زر الرجوع الخاص بالهاتف */
+        .back-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 5px;
         }
+
+        .messages-container { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
         
-        /* فقاعات الرسايل المستقبلية */
-        .msg { 
-            padding: 12px 18px; 
-            border-radius: 16px; 
-            max-width: 55%; 
-            word-break: break-word; 
-            font-size: 1rem; 
-            line-height: 1.5; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            animation: msgSlide 0.3s ease-out;
-        }
-        .msg.incoming { 
-            background: rgba(255, 255, 255, 0.04); 
-            align-self: flex-start; 
-            border-bottom-right-radius: 4px; 
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: #e2e8f0;
-        }
-        .msg.outgoing { 
-            background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%); 
-            align-self: flex-end; 
-            border-bottom-left-radius: 4px; 
-            color: #ffffff; 
-            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
-        }
+        .msg { padding: 12px 18px; border-radius: 16px; max-width: 65%; word-break: break-word; font-size: 1rem; line-height: 1.5; box-shadow: 0 4px 15px rgba(0,0,0,0.15); animation: msgSlide 0.3s ease-out; }
+        .msg.incoming { background: rgba(255, 255, 255, 0.04); align-self: flex-start; border-bottom-right-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); color: #e2e8f0; }
+        .msg.outgoing { background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%); align-self: flex-end; border-bottom-left-radius: 4px; color: #ffffff; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
         .msg-time { font-size: 0.7rem; opacity: 0.6; text-align: left; margin-top: 6px; }
 
-        /* منطقة الكتابة التحتانية */
-        .input-area { 
-            background: rgba(15, 17, 26, 0.8); 
-            padding: 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .input-area input { 
-            flex: 1; 
-            padding: 14px 20px; 
-            background: rgba(255, 255, 255, 0.02); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            color: white; 
-            border-radius: 14px; 
-            outline: none; 
-            font-size: 1rem; 
-        }
-        .input-area input:focus {
-            border-color: #06b6d4;
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+        .input-area { background: rgba(15, 17, 26, 0.8); padding: 20px; display: flex; align-items: center; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        .input-area input { flex: 1; padding: 14px 20px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); color: white; border-radius: 14px; outline: none; font-size: 1rem; }
+        .input-area input:focus { border-color: #06b6d4; background: rgba(255, 255, 255, 0.05); box-shadow: 0 0 15px rgba(6, 182, 212, 0.2); }
+
+        .mic-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #06b6d4; padding: 14px; border-radius: 14px; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; }
+        .mic-btn.recording { background: #ef4444 !important; color: white !important; box-shadow: 0 0 15px #ef4444; animation: pulse 1s infinite; }
+
+        .input-area button.send-btn { background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%); border: none; color: white; padding: 14px 28px; border-radius: 14px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3); }
+
+        .no-chat-selected { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: #64748b; font-size: 1.2rem; text-align: center; padding: 20px; }
+        audio { margin-top: 5px; max-width: 100%; display: block; border-radius: 8px; }
+
+        /* ==================== نظام التجاوب السحري للهاتف ==================== */
+        @media (max-width: 768px) {
+            body { align-items: stretch; }
+            .app-container { width: 100%; height: 100vh; border-radius: 0; border: none; }
+            
+            /* السايدبار كياخد العرض كاملو فالهاتف */
+            .sidebar { width: 100% !important; border-left: none; display: flex; }
+            /* منطقة الشات كتاخد العرض كاملو وتتخبى فالأول */
+            .chat-area { width: 100% !important; display: none; }
+
+            /* فاش كيكون الشات شغال (كنزيدو كلاس chat-active بـ الـ JS) */
+            .app-container.chat-active .sidebar { display: none; }
+            .app-container.chat-active .chat-area { display: flex; }
+
+            /* إظهار زر الرجوع فالهاتف */
+            .back-btn { display: block; }
+            
+            .msg { max-width: 80%; }
+            .auth-container { padding: 25px; border-radius: 16px; }
+            .input-area { padding: 12px; gap: 8px; }
+            .input-area button.send-btn { padding: 14px 18px; }
         }
 
-        /* زر المايكروفون */
-        .mic-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #06b6d4;
-            padding: 14px;
-            border-radius: 14px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .mic-btn.recording {
-            background: #ef4444 !important;
-            color: white !important;
-            box-shadow: 0 0 15px #ef4444;
-            animation: pulse 1s infinite;
-        }
-
-        .input-area button.send-btn { 
-            background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%); 
-            border: none; 
-            color: white; 
-            padding: 14px 28px; 
-            border-radius: 14px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 1rem; 
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
-        }
-        .input-area button.send-btn:hover { 
-            transform: scale(1.03); 
-            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
-        }
-
-        .no-chat-selected { 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            height: 100%; 
-            color: #64748b; 
-            font-size: 1.2rem; 
-            text-align: center; 
-            padding: 20px; 
-        }
-
-        /* مشغل الأوديو المعدل ليتناسب مع الديزاين المظلم */
-        audio {
-            margin-top: 5px;
-            max-width: 250px;
-            display: block;
-            border-radius: 8px;
-        }
-
-        /* تأثيرات الأنميشن */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes msgSlide { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
@@ -313,17 +241,15 @@
         <button id="enterChatBtn">اتصال بالخادم</button>
     </div>
 
-    <!-- الواجهة الرئيسية الهاربة -->
+    <!-- الواجهة الرئيسية المتجاوبة (ID: appSection) -->
     <div class="app-container" id="appSection">
-        <!-- السايدبار (قائمة المتواجدين) -->
+        <!-- السايدبار -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <span id="myProfileName">المستخدم: ...</span>
                 <button class="change-name-btn" id="changeNameBtn">مغادرة</button>
             </div>
-            <div class="user-list" id="usersListContainer">
-                <!-- الناس لايف -->
-            </div>
+            <div class="user-list" id="usersListContainer"></div>
         </div>
 
         <!-- منطقة الشات والرسائل -->
@@ -335,13 +261,14 @@
             
             <div style="display: none; flex-direction: column; height: 100%;" id="activeChatBox">
                 <div class="chat-header">
+                    <!-- زر الرجوع للموبايل -->
+                    <button class="back-btn" id="backToUsersBtn">⬅️</button>
                     <div class="user-avatar" id="activeChatAvatar">?</div>
                     <div id="activeChatName">المستخدم</div>
                 </div>
                 <div class="messages-container" id="messagesBox"></div>
                 <div class="input-area">
                     <input type="text" id="msgInput" placeholder="اكتب رسالتك السرية هنا..." autocomplete="off">
-                    <!-- زر المايك الجديد -->
                     <button class="mic-btn" id="micBtn" title="تسجيل رسالة صوتية">🎤</button>
                     <button class="send-btn" id="sendMsgBtn">إرسال</button>
                 </div>
@@ -353,7 +280,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onChildAdded, off, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // إعدادات الداتابيز
     const firebaseConfig = {
         apiKey: "AIzaSyBDno7fxVLV_GycKE_vbkZTGYHFivUuqbw",
         authDomain: "meryem-ddd8c.firebaseapp.com",
@@ -373,7 +299,6 @@
     let activeChatUserId = null;
     let currentChatRef = null;
 
-    // متغيرات مسجل الصوت
     let mediaRecorder = null;
     let audioChunks = [];
     let isRecording = false;
@@ -394,6 +319,7 @@
     const sendMsgBtn = document.getElementById('sendMsgBtn');
     const micBtn = document.getElementById('micBtn');
     const changeNameBtn = document.getElementById('changeNameBtn');
+    const backToUsersBtn = document.getElementById('backToUsersBtn');
 
     if (myUid && myUsername) {
         startApp();
@@ -441,6 +367,10 @@
                 item.addEventListener('click', () => {
                     document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active'));
                     item.classList.add('active');
+                    
+                    // تفعيل وضع الشات للهاتف
+                    appSection.classList.add('chat-active');
+                    
                     startPrivateChat(userId, userData.username);
                 });
                 usersListContainer.appendChild(item);
@@ -466,9 +396,8 @@
             msgDiv.classList.add('msg');
             msgDiv.classList.add(data.senderId === myUid ? 'outgoing' : 'incoming');
             
-            // تخصيص العرض إذا كان نوع الرسالة أوديو
             if (data.type === 'audio') {
-                msgDiv.style.minWidth = "260px";
+                msgDiv.style.minWidth = "240px";
                 const timeStr = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 msgDiv.innerHTML = `
                     <audio src="${data.text}" controls></audio>
@@ -487,7 +416,11 @@
         });
     }
 
-    // إرسال رسالة نصية
+    // زر إغلاق الشات والرجوع للسايدبار في الهاتف
+    backToUsersBtn.addEventListener('click', () => {
+        appSection.classList.remove('chat-active');
+    });
+
     function sendPrivateMessage() {
         const text = msgInput.value.trim();
         if (text === "" || !activeChatUserId) return;
@@ -504,29 +437,19 @@
         msgInput.value = "";
     }
 
-    // سيستم تسجيل الأوديو وإرساله
     micBtn.addEventListener('click', async () => {
         if (!isRecording) {
-            // بدء التسجيل
             try {
                 audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(audioStream);
                 audioChunks = [];
 
-                mediaRecorder.ondataavailable = (event) => {
-                    audioChunks.push(event.data);
-                };
-
+                mediaRecorder.ondataavailable = (event) => { audioChunks.push(event.data); };
                 mediaRecorder.onstop = () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
                     const reader = new FileReader();
                     reader.readAsDataURL(audioBlob);
-                    reader.onloadend = () => {
-                        const base64Audio = reader.result;
-                        sendPrivateAudio(base64Audio);
-                    };
-                    
-                    // إيقاف المايكروفون تماماً بعد التسجيل
+                    reader.onloadend = () => { sendPrivateAudio(reader.result); };
                     audioStream.getTracks().forEach(track => track.stop());
                 };
 
@@ -534,14 +457,12 @@
                 isRecording = true;
                 micBtn.classList.add('recording');
                 micBtn.innerText = "🛑";
-                msgInput.placeholder = "جاري تسجيل الصوت... إضغط على المربع الأحمر للإرسال";
+                msgInput.placeholder = "جاري التسجيل... إضغط 🛑 للإرسال";
                 msgInput.disabled = true;
-
             } catch (err) {
-                alert("يرجى تفعيل صلاحية المايكروفون للمتصفح لتتمكن من تسجيل الصوت!");
+                alert("فعل صلاحية المايكروفون أولاً!");
             }
         } else {
-            // إيقاف التسجيل وإرساله
             mediaRecorder.stop();
             isRecording = false;
             micBtn.classList.remove('recording');
@@ -551,28 +472,16 @@
         }
     });
 
-    // دالة إرسال الأوديو لقاعدة البيانات
     function sendPrivateAudio(base64Data) {
         if (!activeChatUserId) return;
         const chatId = myUid < activeChatUserId ? `${myUid}_${activeChatUserId}` : `${activeChatUserId}_${myUid}`;
         const chatRef = ref(db, 'private_chats/' + chatId);
-
-        push(chatRef, {
-            senderId: myUid,
-            text: base64Data,
-            type: 'audio',
-            timestamp: Date.now()
-        });
+        push(chatRef, { senderId: myUid, text: base64Data, type: 'audio', timestamp: Date.now() });
     }
 
     sendMsgBtn.addEventListener('click', sendPrivateMessage);
     msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendPrivateMessage(); });
-
-    changeNameBtn.addEventListener('click', () => {
-        localStorage.clear();
-        location.reload();
-    });
+    changeNameBtn.addEventListener('click', () => { localStorage.clear(); location.reload(); });
 </script>
-
 </body>
 </html>
