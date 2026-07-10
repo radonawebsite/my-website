@@ -1,5 +1,109 @@
-موقعي الأول
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>غرفة الدردشة الفورية</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #1a1a2e; color: #fff; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .chat-container { width: 100%; max-width: 500px; background: #162447; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); overflow: hidden; display: flex; flex-direction: column; height: 600px; }
+        .chat-header { background: #0f3460; padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; border-bottom: 2px solid #1a1a2e; color: #e94560; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { background: #1f4068; padding: 10px 14px; border-radius: 8px; max-width: 80%; align-self: flex-start; word-break: break-word; }
+        .message.my-msg { background: #e94560; align-self: flex-end; }
+        .msg-author { font-size: 0.75rem; color: #cbd5e1; margin-bottom: 4px; font-weight: bold; }
+        .msg-text { font-size: 0.95rem; }
+        .chat-input-area { padding: 15px; background: #0f3460; display: flex; flex-direction: column; gap: 10px; }
+        .input-row { display: flex; gap: 8px; }
+        input { background: #1a1a2e; border: 1px solid #162447; padding: 10px; color: #fff; border-radius: 6px; outline: none; }
+        input#username { width: 100%; }
+        input#messageInput { flex: 1; }
+        button { background: #e94560; border: none; color: white; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        button:hover { background: #ff5773; }
+    </style>
+</head>
+<body>
 
+<div class="chat-container">
+    <div class="chat-header">💬 غرفة الدردشة الحية (Real-time)</div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+        <input type="text" id="username" placeholder="اكتب سميتك هنا..." value="مجهول">
+        <div class="input-row">
+            <input type="text" id="messageInput" placeholder="اكتب رسالة..." autocomplete="off">
+            <button id="sendBtn">صيفط</button>
+        </div>
+    </div>
+</div>
 
-    مرحبا بكم في موقعي الأول!
-    هاد الموقع تبرمج من كالي لينكس ومستضاف فـ GitHub Pages.
+<script type="module">
+    // استيراد مكتبات Firebase لايف
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // معلومات الـ Firebase الخاصة بـ المشروع ديالك مريم
+    const firebaseConfig = {
+        apiKey: "AIzaSyBDno7fxVLV_GycKE_vbkZTGYHFiwUuqbw",
+        authDomain: "meryem-ddd8c.firebaseapp.com",
+        databaseURL: "https://meryem-ddd8c-default-rtdb.firebaseio.com",
+        projectId: "meryem-ddd8c",
+        storageBucket: "meryem-ddd8c.firebasestorage.app",
+        messagingSenderId: "13335592232",
+        appId: "1:13335592232:web:bb671bb45da396215e731d",
+        measurementId: "G-7WFB8DRDMK"
+    };
+
+    // تشغيل الـ Firebase وسط الموقع
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const messagesRef = ref(db, 'messages');
+
+    const chatMessages = document.getElementById('chatMessages');
+    const usernameInput = document.getElementById('username');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // دالة إرسال الرسالة
+    function sendMessage() {
+        const name = usernameInput.value.trim() || "مجهول";
+        const text = messageInput.value.trim();
+
+        if (text !== "") {
+            push(messagesRef, {
+                username: name,
+                message: text,
+                timestamp: Date.now()
+            });
+            messageInput.value = ""; // خوي خانة الكتابة
+        }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    // استقبال وقراءة الرسايل لايف فالبلاصة بدون ريفريش
+    onChildAdded(messagesRef, (snapshot) => {
+        const data = snapshot.val();
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message');
+        
+        // إلا كنتي نتا لي صيفطتيها غاتبان بستايل ولون مختلف
+        if (data.username === usernameInput.value.trim()) {
+            msgDiv.classList.add('my-msg');
+        }
+
+        msgDiv.innerHTML = `
+            <div class="msg-author">${data.username}</div>
+            <div class="msg-text">${data.message}</div>
+        `;
+        
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // هبط الشات ديما لتحت
+    });
+</script>
+
+</body>
+</html>
