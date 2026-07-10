@@ -2,119 +2,116 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatPro X | Modern Secure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, playsinline">
+    <title>ChatPro - Secured & Modern</title>
     <style>
-        :root { --primary: #6366f1; --bg: #0f172a; --panel: rgba(30, 41, 59, 0.7); --text: #f8fafc; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
-        body { background: radial-gradient(circle at top right, #1e1b4b, #0f172a); color: var(--text); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-
-        /* ستايل لوحة الدخول */
-        .auth-container { background: var(--panel); backdrop-filter: blur(15px); padding: 30px; border-radius: 25px; width: 90%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center; }
-        .auth-input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; text-align: center; }
-        .btn-main { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        .btn-main:hover { transform: scale(1.02); }
-
-        /* ستايل الشات */
-        .app-container { display: none; width: 95%; max-width: 1000px; height: 85vh; background: var(--panel); border-radius: 20px; backdrop-filter: blur(10px); overflow: hidden; flex-direction: column; }
-        .sticker-panel { display: none; padding: 10px; background: rgba(0,0,0,0.3); grid-template-columns: repeat(4, 1fr); gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sticker-item { cursor: pointer; width: 50px; height: 50px; transition: 0.2s; }
-        .sticker-item:hover { transform: scale(1.1); }
-        
-        .chat-header { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .msg-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .input-box { padding: 15px; background: rgba(255,255,255,0.05); display: flex; gap: 10px; }
-        input[type="text"] { flex: 1; background: transparent; border: none; color: white; padding: 10px; }
-        
-        /* تحسينات التصميم */
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 70%; }
-        .outgoing { align-self: flex-end; background: #6366f1; }
-        .incoming { align-self: flex-start; background: #334155; }
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+        * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; margin: 0; padding: 0; outline: none; }
+        body { background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop') no-repeat center center fixed; background-size: cover; color: #e2e8f0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .glass-panel { background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .auth-container { padding: 40px; border-radius: 20px; width: 90%; max-width: 380px; text-align: center; display: flex; flex-direction: column; gap: 15px; z-index: 10; }
+        .auth-input { width: 100%; padding: 15px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; border-radius: 12px; text-align: center; }
+        .btn { padding: 15px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; font-weight: 700; border-radius: 12px; cursor: pointer; }
+        .app-container { display: none; width: 98%; max-width: 1400px; height: 95vh; border-radius: 20px; overflow: hidden; flex-direction: row; }
+        .sidebar { width: 320px; border-left: 1px solid rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; background: rgba(15, 23, 42, 0.6); }
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: rgba(2, 6, 23, 0.4); }
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; }
+        /* Sticker Section Styling */
+        .sticker-saved-bar { padding: 10px; display: flex; gap: 10px; overflow-x: auto; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .saved-sticker { width: 40px; height: 40px; cursor: pointer; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- قسم الدخول -->
-    <div class="auth-container" id="loginSection">
-        <h2 style="margin-bottom: 20px;">Welcome Back</h2>
-        <input type="text" id="userIn" class="auth-input" placeholder="User (6 chars, English only)" maxlength="6">
-        <input type="password" id="passIn" class="auth-input" placeholder="Pass (8-10 chars, English only)" maxlength="10">
-        <button class="btn-main" onclick="handleLogin()">Login / Register</button>
+    <!-- شاشة الدخول المعدلة -->
+    <div class="glass-panel auth-container" id="loginSection">
+        <h2>ChatPro Login</h2>
+        <input type="text" class="auth-input" id="usernameInput" placeholder="User (1-6 English)" maxlength="6">
+        <input type="password" class="auth-input" id="passwordInput" placeholder="Pass (8-10 English)" maxlength="10">
+        <button class="btn" id="enterBtn">دخول آمن</button>
     </div>
 
-    <!-- قسم الشات -->
-    <div class="app-container" id="appSection">
-        <div class="chat-header">
-            <span>ChatPro X</span>
-            <button onclick="toggleStickers()" style="background:none; border:none; color:white; cursor:pointer;">😊 Stickers</button>
-        </div>
-        
-        <div id="stickerPanel" class="sticker-panel">
-            <img src="https://cdn-icons-png.flaticon.com/128/4263/4263884.png" class="sticker-item" onclick="sendSticker(this.src)">
-            <img src="https://cdn-icons-png.flaticon.com/128/4263/4263897.png" class="sticker-item" onclick="sendSticker(this.src)">
-            <img src="https://cdn-icons-png.flaticon.com/128/4263/4263920.png" class="sticker-item" onclick="sendSticker(this.src)">
-            <img src="https://cdn-icons-png.flaticon.com/128/4263/4263945.png" class="sticker-item" onclick="sendSticker(this.src)">
+    <!-- التطبيق -->
+    <div class="glass-panel app-container" id="appSection">
+        <div class="sidebar">
+            <!-- Sidebar content remains the same -->
+            <div id="userList" style="padding:10px;"></div>
         </div>
 
-        <div class="msg-area" id="msgs"></div>
-        <div class="input-box">
-            <input type="text" id="msgInput" placeholder="Message...">
-            <button onclick="sendMsg()" style="background:var(--primary); border:none; padding:10px 20px; border-radius:10px; color:white;">Send</button>
+        <div class="chat-area" id="chatArea">
+            <div id="activeChatDiv" style="display: none; flex-direction: column; height: 100%;">
+                <div class="chat-header">...</div>
+                
+                <!-- بار الستيكرات المحفوظة -->
+                <div class="sticker-saved-bar" id="savedStickers">
+                    <!-- ستيكراتك غادي تبان هنا -->
+                </div>
+
+                <div class="messages-container" id="msgsContainer"></div>
+                <div class="input-area">
+                    <input type="text" id="msgInput" placeholder="اكتب رسالة...">
+                    <button id="sendBtn">إرسال</button>
+                </div>
+            </div>
         </div>
     </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    const firebaseConfig = { apiKey: "AIzaSyBDno7fxVLV_GycKE_vbkZTGYHFivUuqbw", databaseURL: "https://meryem-ddd8c-default-rtdb.firebaseio.com" };
-    const db = getDatabase(initializeApp(firebaseConfig));
-
-    window.handleLogin = async () => {
-        const u = document.getElementById('userIn').value;
-        const p = document.getElementById('passIn').value;
-
-        // Regex Validation
+    // Firebase imports (keep as in your code)
+    // ... [ملاحظة: خلي كود Firebase ديالك هنا] ...
+    
+    // --- الوظائف الجديدة ---
+    
+    // 1. التحقق من البيانات (Validation)
+    document.getElementById('enterBtn').onclick = () => {
+        const u = document.getElementById('usernameInput').value;
+        const p = document.getElementById('passwordInput').value;
+        
         const userRegex = /^[a-zA-Z]{1,6}$/;
         const passRegex = /^[a-zA-Z]{8,10}$/;
 
-        if (!userRegex.test(u)) return alert("Username must be English only, 1-6 chars.");
-        if (!passRegex.test(p)) return alert("Password must be English only, 8-10 chars.");
+        if (!userRegex.test(u)) return alert("الاسم يجب أن يكون إنجليزياً (1-6 أحرف فقط)!");
+        if (!passRegex.test(p)) return alert("كلمة السر يجب أن تكون إنجليزية (8-10 أحرف فقط)!");
 
-        // تسجيل أو دخول (بسيط)
+        // إذا كلشي صحيح، كمل كود الدخول ديالك
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('appSection').style.display = 'flex';
-        listenMessages();
     };
 
-    window.toggleStickers = () => {
-        const p = document.getElementById('stickerPanel');
-        p.style.display = (p.style.display === 'grid') ? 'none' : 'grid';
-    };
-
-    window.sendSticker = (url) => {
-        push(ref(db, 'messages'), { type: 'sticker', content: url, time: Date.now() });
-        toggleStickers();
-    };
-
-    window.sendMsg = () => {
-        const input = document.getElementById('msgInput');
-        if(input.value) {
-            push(ref(db, 'messages'), { type: 'text', content: input.value, time: Date.now() });
-            input.value = '';
+    // 2. نظام حفظ الستيكرات (Persistence)
+    const saveSticker = (url) => {
+        let saved = JSON.parse(localStorage.getItem('myStickers') || '[]');
+        if (!saved.includes(url)) {
+            saved.push(url);
+            localStorage.setItem('myStickers', JSON.stringify(saved));
+            renderSavedStickers();
         }
     };
 
-    function listenMessages() {
-        onChildAdded(ref(db, 'messages'), (s) => {
-            const data = s.val();
-            const div = document.createElement('div');
-            div.className = 'msg incoming';
-            if(data.type === 'text') div.innerText = data.content;
-            if(data.type === 'sticker') div.innerHTML = `<img src="${data.content}" width="50">`;
-            document.getElementById('msgs').appendChild(div);
+    const renderSavedStickers = () => {
+        const bar = document.getElementById('savedStickers');
+        const saved = JSON.parse(localStorage.getItem('myStickers') || '[]');
+        bar.innerHTML = '<small style="color:gray; margin-right:5px;">المحفوظة:</small>';
+        saved.forEach(url => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'saved-sticker';
+            img.onclick = () => sendMessage(url, 'sticker'); // إرسال مباشر
+            bar.appendChild(img);
         });
+    };
+
+    // عدل دالة الإرسال ديالك باش تزيد الستيكر للحفظ:
+    function sendMessage(content, type) {
+        if(type === 'sticker') {
+            saveSticker(content); // كيحفظو بمجرد ما يرسلو
+        }
+        // ... باقي كود الإرسال ديالك ...
     }
+
+    // Load stickers on startup
+    renderSavedStickers();
+
 </script>
 </body>
 </html>
