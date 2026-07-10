@@ -222,7 +222,7 @@
             padding: 20px; 
             display: flex; 
             align-items: center; 
-            gap: 15px; 
+            gap: 12px; 
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         .input-area input { 
@@ -240,7 +240,28 @@
             background: rgba(255, 255, 255, 0.05);
             box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
         }
-        .input-area button { 
+
+        /* زر المايكروفون */
+        .mic-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #06b6d4;
+            padding: 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mic-btn.recording {
+            background: #ef4444 !important;
+            color: white !important;
+            box-shadow: 0 0 15px #ef4444;
+            animation: pulse 1s infinite;
+        }
+
+        .input-area button.send-btn { 
             background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%); 
             border: none; 
             color: white; 
@@ -251,7 +272,7 @@
             font-size: 1rem; 
             box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
         }
-        .input-area button:hover { 
+        .input-area button.send-btn:hover { 
             transform: scale(1.03); 
             box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
         }
@@ -268,9 +289,18 @@
             padding: 20px; 
         }
 
+        /* مشغل الأوديو المعدل ليتناسب مع الديزاين المظلم */
+        audio {
+            margin-top: 5px;
+            max-width: 250px;
+            display: block;
+            border-radius: 8px;
+        }
+
         /* تأثيرات الأنميشن */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes msgSlide { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -311,7 +341,9 @@
                 <div class="messages-container" id="messagesBox"></div>
                 <div class="input-area">
                     <input type="text" id="msgInput" placeholder="اكتب رسالتك السرية هنا..." autocomplete="off">
-                    <button id="sendMsgBtn">إرسال</button>
+                    <!-- زر المايك الجديد -->
+                    <button class="mic-btn" id="micBtn" title="تسجيل رسالة صوتية">🎤</button>
+                    <button class="send-btn" id="sendMsgBtn">إرسال</button>
                 </div>
             </div>
         </div>
@@ -341,6 +373,12 @@
     let activeChatUserId = null;
     let currentChatRef = null;
 
+    // متغيرات مسجل الصوت
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let audioStream = null;
+
     const loginSection = document.getElementById('loginSection');
     const appSection = document.getElementById('appSection');
     const usernameInput = document.getElementById('usernameInput');
@@ -354,6 +392,7 @@
     const messagesBox = document.getElementById('messagesBox');
     const msgInput = document.getElementById('msgInput');
     const sendMsgBtn = document.getElementById('sendMsgBtn');
+    const micBtn = document.getElementById('micBtn');
     const changeNameBtn = document.getElementById('changeNameBtn');
 
     if (myUid && myUsername) {
@@ -427,16 +466,28 @@
             msgDiv.classList.add('msg');
             msgDiv.classList.add(data.senderId === myUid ? 'outgoing' : 'incoming');
             
-            const timeStr = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            msgDiv.innerHTML = `
-                <div>${data.text}</div>
-                <div class="msg-time">${timeStr}</div>
-            `;
+            // تخصيص العرض إذا كان نوع الرسالة أوديو
+            if (data.type === 'audio') {
+                msgDiv.style.minWidth = "260px";
+                const timeStr = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                msgDiv.innerHTML = `
+                    <audio src="${data.text}" controls></audio>
+                    <div class="msg-time">${timeStr}</div>
+                `;
+            } else {
+                const timeStr = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                msgDiv.innerHTML = `
+                    <div>${data.text}</div>
+                    <div class="msg-time">${timeStr}</div>
+                `;
+            }
+            
             messagesBox.appendChild(msgDiv);
             messagesBox.scrollTop = messagesBox.scrollHeight;
         });
     }
 
+    // إرسال رسالة نصية
     function sendPrivateMessage() {
         const text = msgInput.value.trim();
         if (text === "" || !activeChatUserId) return;
@@ -447,9 +498,71 @@
         push(chatRef, {
             senderId: myUid,
             text: text,
+            type: 'text',
             timestamp: Date.now()
         });
         msgInput.value = "";
+    }
+
+    // سيستم تسجيل الأوديو وإرساله
+    micBtn.addEventListener('click', async () => {
+        if (!isRecording) {
+            // بدء التسجيل
+            try {
+                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(audioStream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = () => {
+                        const base64Audio = reader.result;
+                        sendPrivateAudio(base64Audio);
+                    };
+                    
+                    // إيقاف المايكروفون تماماً بعد التسجيل
+                    audioStream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                micBtn.classList.add('recording');
+                micBtn.innerText = "🛑";
+                msgInput.placeholder = "جاري تسجيل الصوت... إضغط على المربع الأحمر للإرسال";
+                msgInput.disabled = true;
+
+            } catch (err) {
+                alert("يرجى تفعيل صلاحية المايكروفون للمتصفح لتتمكن من تسجيل الصوت!");
+            }
+        } else {
+            // إيقاف التسجيل وإرساله
+            mediaRecorder.stop();
+            isRecording = false;
+            micBtn.classList.remove('recording');
+            micBtn.innerText = "🎤";
+            msgInput.placeholder = "اكتب رسالتك السرية هنا...";
+            msgInput.disabled = false;
+        }
+    });
+
+    // دالة إرسال الأوديو لقاعدة البيانات
+    function sendPrivateAudio(base64Data) {
+        if (!activeChatUserId) return;
+        const chatId = myUid < activeChatUserId ? `${myUid}_${activeChatUserId}` : `${activeChatUserId}_${myUid}`;
+        const chatRef = ref(db, 'private_chats/' + chatId);
+
+        push(chatRef, {
+            senderId: myUid,
+            text: base64Data,
+            type: 'audio',
+            timestamp: Date.now()
+        });
     }
 
     sendMsgBtn.addEventListener('click', sendPrivateMessage);
