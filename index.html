@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>المجتمع السري للدردشة</title>
+    <title>المجتمع السري للدردشة والمكالمات</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
         
@@ -97,7 +97,6 @@
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
         
-        /* السايدبار */
         .sidebar { 
             width: 32%; 
             background: rgba(15, 17, 26, 0.7); 
@@ -173,16 +172,11 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
         }
 
-        /* زر الرجوع الخاص بالهاتف */
-        .back-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.4rem;
-            cursor: pointer;
-            padding: 5px;
-        }
+        .back-btn { display: none; background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 5px; }
+        
+        /* زر الاتصال الهاتفي */
+        .call-icon-btn { margin-right: auto; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); color: #06b6d4; padding: 10px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        .call-icon-btn:hover { background: #06b6d4; color: white; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
 
         .messages-container { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
         
@@ -203,37 +197,53 @@
         .no-chat-selected { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: #64748b; font-size: 1.2rem; text-align: center; padding: 20px; }
         audio { margin-top: 5px; max-width: 100%; display: block; border-radius: 8px; }
 
-        /* ==================== نظام التجاوب السحري للهاتف ==================== */
+        /* ==================== واجهة مكالمات متطورة ومتحركة ==================== */
+        .call-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(7, 8, 14, 0.95); 
+            backdrop-filter: blur(25px); 
+            -webkit-backdrop-filter: blur(25px);
+            z-index: 9999; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 15px; 
+            color: white;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .call-avatar { width: 100px; height: 100px; font-size: 2.5rem; border-radius: 24px; box-shadow: 0 0 30px rgba(124, 58, 237, 0.4); margin-bottom: 15px; }
+        .call-status { font-size: 1.4rem; font-weight: 600; color: #06b6d4; }
+        .call-buttons { display: flex; gap: 20px; margin-top: 30px; }
+        .c-btn { border: none; padding: 15px 35px; border-radius: 16px; font-weight: bold; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 10px; color: white; }
+        .c-btn.accept { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4); }
+        .c-btn.decline { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4); }
+
+        /* ==================== نظام التجاوب للهاتف ==================== */
         @media (max-width: 768px) {
             body { align-items: stretch; }
             .app-container { width: 100%; height: 100vh; border-radius: 0; border: none; }
-            
-            /* السايدبار كياخد العرض كاملو فالهاتف */
             .sidebar { width: 100% !important; border-left: none; display: flex; }
-            /* منطقة الشات كتاخد العرض كاملو وتتخبى فالأول */
             .chat-area { width: 100% !important; display: none; }
-
-            /* فاش كيكون الشات شغال (كنزيدو كلاس chat-active بـ الـ JS) */
             .app-container.chat-active .sidebar { display: none; }
             .app-container.chat-active .chat-area { display: flex; }
-
-            /* إظهار زر الرجوع فالهاتف */
             .back-btn { display: block; }
-            
             .msg { max-width: 80%; }
             .auth-container { padding: 25px; border-radius: 16px; }
             .input-area { padding: 12px; gap: 8px; }
             .input-area button.send-btn { padding: 14px 18px; }
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes msgSlide { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <!-- شاشة اختيار الاسم المستقبلي -->
+    <!-- شاشة اختيار الاسم -->
     <div class="auth-container" id="loginSection">
         <h2>المجتمع المشفر ⚡</h2>
         <p>اختار سّمية مستعارة باش تدخل للدردشة الفورية</p>
@@ -241,7 +251,7 @@
         <button id="enterChatBtn">اتصال بالخادم</button>
     </div>
 
-    <!-- الواجهة الرئيسية المتجاوبة (ID: appSection) -->
+    <!-- الواجهة الرئيسية -->
     <div class="app-container" id="appSection">
         <!-- السايدبار -->
         <div class="sidebar">
@@ -256,15 +266,16 @@
         <div class="chat-area" id="chatAreaContainer">
             <div class="no-chat-selected" id="noChatPlaceholder">
                 <div style="font-size: 3rem; margin-bottom: 10px;">💬</div>
-                <div>عزل شي حد من القائمة باش تبدا معاه محادثة مشفرة وآمنة بالكامل</div>
+                <div>عزل شي حد من القائمة باش تبدا معاه محادثة ومكالمات مشفرة بالكامل</div>
             </div>
             
             <div style="display: none; flex-direction: column; height: 100%;" id="activeChatBox">
                 <div class="chat-header">
-                    <!-- زر الرجوع للموبايل -->
                     <button class="back-btn" id="backToUsersBtn">⬅️</button>
                     <div class="user-avatar" id="activeChatAvatar">?</div>
                     <div id="activeChatName">المستخدم</div>
+                    <!-- زر الاتصال الجديد -->
+                    <button class="call-icon-btn" id="callBtn" title="بدء مكالمة صوتية">📞 اتصال</button>
                 </div>
                 <div class="messages-container" id="messagesBox"></div>
                 <div class="input-area">
@@ -276,9 +287,24 @@
         </div>
     </div>
 
+    <!-- واجهة المكالمات المنبثقة (Call Overlay) -->
+    <div class="call-overlay" id="callOverlay">
+        <div class="user-avatar call-avatar" id="callOverlayAvatar">?</div>
+        <h2 id="callOverlayName">اسم المستخدم</h2>
+        <div class="call-status" id="callOverlayStatus">جاري الاتصال المباشر...</div>
+        <div class="call-buttons">
+            <button class="c-btn accept" id="acceptCallBtn">قبول ✅</button>
+            <button class="c-btn decline" id="declineCallBtn">رفض ✖</button>
+            <button class="c-btn decline" id="endCallBtn" style="display: none;">إنهاء المكالمة 🛑</button>
+        </div>
+    </div>
+
+    <!-- عنصر أوديو مخفي لتشغيل صوت المتصل الآخر -->
+    <audio id="remoteAudio" autoplay></audio>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, onChildAdded, off, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, onChildAdded, off, push, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBDno7fxVLV_GycKE_vbkZTGYHFivUuqbw",
@@ -299,10 +325,17 @@
     let activeChatUserId = null;
     let currentChatRef = null;
 
+    // متغيرات الأوديو والمسجل القديم
     let mediaRecorder = null;
     let audioChunks = [];
     let isRecording = false;
     let audioStream = null;
+
+    // متغيرات المكالمة الصوتية (WebRTC)
+    let peerConnection = null;
+    let localStream = null;
+    let currentCallId = null;
+    const iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
 
     const loginSection = document.getElementById('loginSection');
     const appSection = document.getElementById('appSection');
@@ -320,6 +353,17 @@
     const micBtn = document.getElementById('micBtn');
     const changeNameBtn = document.getElementById('changeNameBtn');
     const backToUsersBtn = document.getElementById('backToUsersBtn');
+    const callBtn = document.getElementById('callBtn');
+
+    // عناصر واجهة المكالمة
+    const callOverlay = document.getElementById('callOverlay');
+    const callOverlayAvatar = document.getElementById('callOverlayAvatar');
+    const callOverlayName = document.getElementById('callOverlayName');
+    const callOverlayStatus = document.getElementById('callOverlayStatus');
+    const acceptCallBtn = document.getElementById('acceptCallBtn');
+    const declineCallBtn = document.getElementById('declineCallBtn');
+    const endCallBtn = document.getElementById('endCallBtn');
+    const remoteAudio = document.getElementById('remoteAudio');
 
     if (myUid && myUsername) {
         startApp();
@@ -331,13 +375,10 @@
     enterChatBtn.addEventListener('click', () => {
         const name = usernameInput.value.trim();
         if (!name) return alert("عافاك اكتب سّميتك أولاً!");
-        
         myUid = 'user_' + Math.random().toString(36).substring(2, 11);
         myUsername = name;
-        
         localStorage.setItem('chat_uid', myUid);
         localStorage.setItem('chat_username', myUsername);
-        
         startApp();
     });
 
@@ -347,6 +388,7 @@
         myProfileName.innerText = myUsername + " (أنا) 🌐";
         set(ref(db, 'users/' + myUid), { username: myUsername });
         loadUsersList();
+        listenForIncomingCalls(); // تفعيل الاستماع للمكالمات الواردة
     }
 
     function loadUsersList() {
@@ -355,7 +397,6 @@
         onChildAdded(usersRef, (snapshot) => {
             const userId = snapshot.key;
             const userData = snapshot.val();
-            
             if (userId !== myUid) {
                 const item = document.createElement('div');
                 item.classList.add('user-item');
@@ -367,10 +408,7 @@
                 item.addEventListener('click', () => {
                     document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active'));
                     item.classList.add('active');
-                    
-                    // تفعيل وضع الشات للهاتف
                     appSection.classList.add('chat-active');
-                    
                     startPrivateChat(userId, userData.username);
                 });
                 usersListContainer.appendChild(item);
@@ -396,88 +434,201 @@
             msgDiv.classList.add('msg');
             msgDiv.classList.add(data.senderId === myUid ? 'outgoing' : 'incoming');
             
+            const timeStr = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             if (data.type === 'audio') {
                 msgDiv.style.minWidth = "240px";
-                const timeStr = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                msgDiv.innerHTML = `
-                    <audio src="${data.text}" controls></audio>
-                    <div class="msg-time">${timeStr}</div>
-                `;
+                msgDiv.innerHTML = `<audio src="${data.text}" controls></audio><div class="msg-time">${timeStr}</div>`;
             } else {
-                const timeStr = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                msgDiv.innerHTML = `
-                    <div>${data.text}</div>
-                    <div class="msg-time">${timeStr}</div>
-                `;
+                msgDiv.innerHTML = `<div>${data.text}</div><div class="msg-time">${timeStr}</div>`;
             }
-            
             messagesBox.appendChild(msgDiv);
             messagesBox.scrollTop = messagesBox.scrollHeight;
         });
     }
 
-    // زر إغلاق الشات والرجوع للسايدبار في الهاتف
-    backToUsersBtn.addEventListener('click', () => {
-        appSection.classList.remove('chat-active');
-    });
+    backToUsersBtn.addEventListener('click', () => { appSection.classList.remove('chat-active'); });
 
     function sendPrivateMessage() {
         const text = msgInput.value.trim();
         if (text === "" || !activeChatUserId) return;
-
         const chatId = myUid < activeChatUserId ? `${myUid}_${activeChatUserId}` : `${activeChatUserId}_${myUid}`;
-        const chatRef = ref(db, 'private_chats/' + chatId);
-
-        push(chatRef, {
-            senderId: myUid,
-            text: text,
-            type: 'text',
-            timestamp: Date.now()
-        });
+        push(ref(db, 'private_chats/' + chatId), { senderId: myUid, text: text, type: 'text', timestamp: Date.now() });
         msgInput.value = "";
     }
 
+    // ==================== محرك المكالمات الصوتية المباشرة (WebRTC) ====================
+
+    // 1. عند الضغط على زر الاتصال (صادر)
+    callBtn.addEventListener('click', async () => {
+        if (!activeChatUserId) return;
+        currentCallId = myUid < activeChatUserId ? `${myUid}_${activeChatUserId}` : `${activeChatUserId}_${myUid}`;
+        
+        showCallOverlay(activeChatName.innerText, "جاري الرنين والاتصال المشفر...");
+        acceptCallBtn.style.display = "none";
+        declineCallBtn.style.display = "none";
+        endCallBtn.style.display = "block";
+
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            peerConnection = new RTCPeerConnection(iceServers);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+            peerConnection.onicecandidate = (e) => {
+                if (e.candidate) push(ref(db, `calls/${currentCallId}/callerCandidates`), e.candidate.toJSON());
+            };
+            peerConnection.ontrack = (e) => { remoteAudio.srcObject = e.streams[0]; };
+
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+
+            await set(ref(db, `calls/${currentCallId}`), {
+                offer: { type: offer.type, sdp: offer.sdp },
+                status: 'ringing',
+                callerId: myUid,
+                callerName: myUsername,
+                calleeId: activeChatUserId
+            });
+
+            // مراقبة ردود الفعل وتغيرات حالة الاتصال
+            onValue(ref(db, `calls/${currentCallId}`), async (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+                if (data.status === 'accepted' && data.answer && !peerConnection.currentRemoteDescription) {
+                    callOverlayStatus.innerText = "المكالمة نشطة الآن 🟢";
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                }
+                if (data.status === 'rejected' || data.status === 'ended') {
+                    cleanUpCall();
+                }
+            });
+
+            onChildAdded(ref(db, `calls/${currentCallId}/calleeCandidates`), (snap) => {
+                peerConnection.addIceCandidate(new RTCIceCandidate(snap.val()));
+            });
+
+        } catch (err) {
+            alert("فعل صلاحية المايكروفون لبدء المكالمة!");
+            cleanUpCall();
+        }
+    });
+
+    // 2. الاستماع المستمر للمكالمات الواردة من أي مستخدم آخر
+    function listenForIncomingCalls() {
+        onValue(ref(db, 'calls'), (snapshot) => {
+            snapshot.forEach((childSnap) => {
+                const callId = childSnap.key;
+                const callData = childSnap.val();
+                if (callData && callData.calleeId === myUid && callData.status === 'ringing') {
+                    currentCallId = callId;
+                    showCallOverlay(callData.callerName, "مكالمة صوتية واردة...");
+                    acceptCallBtn.style.display = "block";
+                    declineCallBtn.style.display = "block";
+                    endCallBtn.style.display = "none";
+                }
+                if (callData && (callData.callerId === myUid || callData.calleeId === myUid) && callData.status === 'ended') {
+                    cleanUpCall();
+                }
+            });
+        });
+    }
+
+    // 3. عند قبول المكالمة الواردة
+    acceptCallBtn.addEventListener('click', async () => {
+        acceptCallBtn.style.display = "none";
+        declineCallBtn.style.display = "none";
+        endCallBtn.style.display = "block";
+        callOverlayStatus.innerText = "جاري ربط القنوات الآمنة...";
+
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            peerConnection = new RTCPeerConnection(iceServers);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+            peerConnection.onicecandidate = (e) => {
+                if (e.candidate) push(ref(db, `calls/${currentCallId}/calleeCandidates`), e.candidate.toJSON());
+            };
+            peerConnection.ontrack = (e) => { remoteAudio.srcObject = e.streams[0]; };
+
+            onValue(ref(db, `calls/${currentCallId}`), async (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+                if (data.offer && !peerConnection.currentRemoteDescription) {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    await update(ref(db, `calls/${currentCallId}`), {
+                        answer: { type: answer.type, sdp: answer.sdp },
+                        status: 'accepted'
+                    });
+                    callOverlayStatus.innerText = "المكالمة نشطة الآن 🟢";
+                }
+            });
+
+            onChildAdded(ref(db, `calls/${currentCallId}/callerCandidates`), (snap) => {
+                peerConnection.addIceCandidate(new RTCIceCandidate(snap.val()));
+            });
+
+        } catch (err) {
+            alert("عافاك فعل المايكروفون للرد!");
+            rejectCallAction();
+        }
+    });
+
+    // 4. أفعال الرفض والإنهاء
+    declineCallBtn.addEventListener('click', rejectCallAction);
+    endCallBtn.addEventListener('click', endCallAction);
+
+    async function rejectCallAction() {
+        if (currentCallId) await update(ref(db, `calls/${currentCallId}`), { status: 'rejected' });
+        cleanUpCall();
+    }
+
+    async function endCallAction() {
+        if (currentCallId) await update(ref(db, `calls/${currentCallId}`), { status: 'ended' });
+        cleanUpCall();
+    }
+
+    function showCallOverlay(name, statusText) {
+        callOverlayName.innerText = name;
+        callOverlayAvatar.innerText = name[0].toUpperCase();
+        callOverlayStatus.innerText = statusText;
+        callOverlay.style.display = "flex";
+    }
+
+    function cleanUpCall() {
+        callOverlay.style.display = "none";
+        if (localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; }
+        if (peerConnection) { peerConnection.close(); peerConnection = null; }
+        remoteAudio.srcObject = null;
+        if (currentCallId) { set(ref(db, `calls/${currentCallId}`), null); currentCallId = null; }
+    }
+
+    // ==================== مسجل الصوت القديم (الأوديو نوت) ====================
     micBtn.addEventListener('click', async () => {
         if (!isRecording) {
             try {
                 audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(audioStream);
                 audioChunks = [];
-
                 mediaRecorder.ondataavailable = (event) => { audioChunks.push(event.data); };
                 mediaRecorder.onstop = () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
                     const reader = new FileReader();
                     reader.readAsDataURL(audioBlob);
-                    reader.onloadend = () => { sendPrivateAudio(reader.result); };
+                    reader.onloadend = () => { if (activeChatUserId) push(ref(db, 'private_chats/' + (myUid < activeChatUserId ? `${myUid}_${activeChatUserId}` : `${activeChatUserId}_${myUid}`)), { senderId: myUid, text: reader.result, type: 'audio', timestamp: Date.now() }); };
                     audioStream.getTracks().forEach(track => track.stop());
                 };
-
                 mediaRecorder.start();
                 isRecording = true;
-                micBtn.classList.add('recording');
-                micBtn.innerText = "🛑";
-                msgInput.placeholder = "جاري التسجيل... إضغط 🛑 للإرسال";
-                msgInput.disabled = true;
-            } catch (err) {
-                alert("فعل صلاحية المايكروفون أولاً!");
-            }
+                micBtn.classList.add('recording'); micBtn.innerText = "🛑";
+                msgInput.placeholder = "جاري تسجيل النوت... إضغط 🛑 للإرسال"; msgInput.disabled = true;
+            } catch (err) { alert("فعل صلاحية المايكروفون أولاً!"); }
         } else {
-            mediaRecorder.stop();
-            isRecording = false;
-            micBtn.classList.remove('recording');
-            micBtn.innerText = "🎤";
-            msgInput.placeholder = "اكتب رسالتك السرية هنا...";
-            msgInput.disabled = false;
+            mediaRecorder.stop(); isRecording = false;
+            micBtn.classList.remove('recording'); micBtn.innerText = "🎤";
+            msgInput.placeholder = "اكتب رسالتك السرية هنا..."; msgInput.disabled = false;
         }
     });
-
-    function sendPrivateAudio(base64Data) {
-        if (!activeChatUserId) return;
-        const chatId = myUid < activeChatUserId ? `${myUid}_${activeChatUserId}` : `${activeChatUserId}_${myUid}`;
-        const chatRef = ref(db, 'private_chats/' + chatId);
-        push(chatRef, { senderId: myUid, text: base64Data, type: 'audio', timestamp: Date.now() });
-    }
 
     sendMsgBtn.addEventListener('click', sendPrivateMessage);
     msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendPrivateMessage(); });
